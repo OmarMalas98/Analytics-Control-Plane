@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 /**
@@ -73,4 +74,18 @@ interface JobLockRepository : JpaRepository<JobLock, String> {
         nativeQuery = true,
     )
     fun releaseIfHeldBy(@Param("jobName") jobName: String, @Param("heldBy") heldBy: String): Int
+
+    /**
+     * Clears every lock in one statement.
+     *
+     * <p>Deliberately not {@code deleteAll()}, which loads the rows and then deletes them one by
+     * one — the same read-then-write pattern this whole class exists to avoid. If anything releases
+     * a lock in the gap between those two operations, the per-row delete finds nothing and Hibernate
+     * raises a stale-object failure. A single statement cannot be caught out that way, and deleting
+     * zero rows is a perfectly good outcome.
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM job_lock", nativeQuery = true)
+    fun releaseAll(): Int
 }

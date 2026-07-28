@@ -38,7 +38,14 @@ class ScheduledJobs(
      * a backend is restored from an older snapshot. Detecting it is the point of keeping a local
      * record at all.
      */
-    @Scheduled(fixedDelayString = "\${control-plane.jobs.reconcile-interval:PT60S}")
+    // fixedDelay governs the gap *after* a run, not the wait before the first one — without an
+    // initial delay both jobs fire the instant the context is ready, racing application startup and
+    // grabbing locks before the instance has settled. It also makes the scheduler impossible to keep
+    // out of a test, since raising the interval does not prevent that first immediate execution.
+    @Scheduled(
+        fixedDelayString = "\${control-plane.jobs.reconcile-interval:PT60S}",
+        initialDelayString = "\${control-plane.jobs.initial-delay:PT15S}",
+    )
     fun reconcileStreams() {
         locks.runIfLockAcquired("reconcile-streams", Duration.ofMinutes(5)) {
             reconcileRuns.incrementAndGet()
@@ -54,7 +61,10 @@ class ScheduledJobs(
         }
     }
 
-    @Scheduled(fixedDelayString = "\${control-plane.jobs.report-interval:PT300S}")
+    @Scheduled(
+        fixedDelayString = "\${control-plane.jobs.report-interval:PT300S}",
+        initialDelayString = "\${control-plane.jobs.initial-delay:PT15S}",
+    )
     fun generateScheduledReports() {
         locks.runIfLockAcquired("generate-reports", Duration.ofMinutes(15)) {
             reportRuns.incrementAndGet()

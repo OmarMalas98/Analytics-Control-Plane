@@ -24,6 +24,9 @@ import kotlin.test.assertTrue
 @SpringBootTest(properties = [
     "control-plane.jobs.reconcile-interval=PT1H",
     "control-plane.jobs.report-interval=PT1H",
+    // A fixed-delay job still fires once immediately unless an initial delay pushes it out, and
+    // reconciliation reads the very mappings these tests are creating and rolling back.
+    "control-plane.jobs.initial-delay=PT1H",
 ])
 class StreamProvisioningServiceTest {
 

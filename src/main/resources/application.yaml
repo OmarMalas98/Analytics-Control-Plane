@@ -22,6 +22,10 @@ control-plane:
   jobs:
     reconcile-interval: ${RECONCILE_INTERVAL:PT60S}
     report-interval: ${REPORT_INTERVAL:PT300S}
+    # How long to wait before the first run of each job. Fixed-delay scheduling otherwise fires
+    # immediately on startup, which races application initialisation and takes locks before the
+    # instance has settled.
+    initial-delay: ${JOBS_INITIAL_DELAY:PT15S}
 
 logging:
   level:

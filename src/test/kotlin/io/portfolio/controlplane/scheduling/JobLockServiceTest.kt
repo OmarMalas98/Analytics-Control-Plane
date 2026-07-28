@@ -21,6 +21,10 @@ import kotlin.test.assertTrue
 @SpringBootTest(properties = [
     "control-plane.jobs.reconcile-interval=PT1H",
     "control-plane.jobs.report-interval=PT1H",
+    // The interval alone is not enough: a fixed-delay job still fires once immediately unless an
+    // initial delay pushes it out. Without this the real scheduler competes with these tests for
+    // the very locks they are asserting on.
+    "control-plane.jobs.initial-delay=PT1H",
 ])
 class JobLockServiceTest {
 
@@ -32,7 +36,7 @@ class JobLockServiceTest {
 
     @BeforeEach
     fun reset() {
-        repository.deleteAll()
+        repository.releaseAll()
     }
 
     @Test
