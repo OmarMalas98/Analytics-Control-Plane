@@ -1,5 +1,9 @@
 # analytics-control-plane
 
+[![build](https://github.com/OmarMalas98/analytics-control-plane/actions/workflows/build.yml/badge.svg)](https://github.com/OmarMalas98/analytics-control-plane/actions/workflows/build.yml)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.1-7f52ff)
+![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)
+
 **Provisioning a set of dependent artifacts into a system that has no transactions — and undoing it
 cleanly when step five of six fails.**
 

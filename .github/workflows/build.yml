@@ -1,0 +1,31 @@
+name: build
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: JDK 17 · mvn test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Deliberately 17 rather than a newer JDK: it is the version the README tells people to use,
+      # and the version the pom targets. Building on it here is what makes that claim true rather
+      # than assumed. The Kotlin plugin also targets 17, so this exercises the declared jvmTarget.
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+
+      # A clean Linux runner with an empty dependency cache — the environment a stranger cloning
+      # this repo actually has, and the only way to know it builds for them.
+      - name: Build and test
+        run: mvn -B --no-transfer-progress test
