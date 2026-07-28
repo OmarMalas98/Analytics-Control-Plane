@@ -1,0 +1,22 @@
+{
+  "template": {
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "stream": {
+          "type": "keyword"
+        }{{#each fields}},
+        "{{name}}": {
+          "type": "{{type}}"{{#if indexed}},
+          "index": true{{/if}}
+        }{{/each}}
+      }
+    }
+  },
+  "_meta": {
+    "managedBy": "analytics-control-plane",
+    "stream": "{{stream}}"
+  }
+}

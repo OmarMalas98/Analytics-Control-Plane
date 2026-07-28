@@ -1,0 +1,16 @@
+{
+  "index_patterns": ["{{indexPattern}}"],
+  "priority": {{priority}},
+  "composed_of": [],
+  "template": {
+    "settings": {
+      "index.default_pipeline": "{{pipelineName}}",
+      "index.number_of_shards": {{shards}},
+      "index.number_of_replicas": {{replicas}}
+    }
+  },
+  "_meta": {
+    "managedBy": "analytics-control-plane",
+    "stream": "{{stream}}"
+  }
+}

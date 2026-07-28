@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: analytics-control-plane
+
+  # In-memory store so the control plane runs with nothing installed. In production this is a real
+  # database: it holds both the record of what should be provisioned and the job-lock table that
+  # keeps replicas from running the same scheduled work twice.
+  datasource:
+    url: jdbc:h2:mem:controlplane;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+
+server:
+  port: ${SERVER_PORT:8095}
+
+control-plane:
+  jobs:
+    reconcile-interval: ${RECONCILE_INTERVAL:PT60S}
+    report-interval: ${REPORT_INTERVAL:PT300S}
+
+logging:
+  level:
+    io.portfolio.controlplane: ${LOG_LEVEL:INFO}
+    # Losing the race for a job lock raises a constraint violation, and that is the expected outcome
+    # on every replica but one. Left at WARN it reports a normal condition as a problem, on every
+    # scheduled tick, on every instance.
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: ${SQL_EXCEPTION_LOG_LEVEL:ERROR}

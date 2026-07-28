@@ -1,0 +1,24 @@
+{
+  "description": "Ingest pipeline for {{stream}}",
+  "processors": [
+    {
+      "set": {
+        "field": "stream",
+        "value": "{{stream}}"
+      }
+    },
+    {
+      "date": {
+        "field": "{{timestampField}}",
+        "target_field": "@timestamp",
+        "formats": ["ISO8601"]
+      }
+    }{{#each processors}},
+    {
+      "{{type}}": {
+        "field": "{{field}}"{{#if value}},
+        "value": "{{value}}"{{/if}}
+      }
+    }{{/each}}
+  ]
+}
